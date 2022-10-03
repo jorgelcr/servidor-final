@@ -39,7 +39,7 @@ const post_Debilidad = async(req, res = response) => {
         console.log(insert_unidad);
         res.status(200).json({ 
             ok: true,   
-            message: ' Debilidad agregado Exitosamente m ',
+            message: ' Debilidad agregado Exitosamente abcd ',
             body: {
                 producto: {codigo_debilidades, nombre_debilidades, descripcion_debilidades, estado_debilidades, fk_id_unidad, fk_id_criterio}
             }
