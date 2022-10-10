@@ -40,7 +40,7 @@ const post_Usuario= async(req, res = response) => {
   
         let contrasenaHash = await bcryptjs.hashSync(contrasena, 10);
         const insertUsuario = await pool.query('INSERT INTO usuarios (rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',[ rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasenaHash, estado, fk_id_rol, fk_id_unidad]);
-        console.log(insertUsuario);
+        console.log("la contraseña es: ",contrasena);
 
         console.log("LA CONTRASEÑA ES: ",contrasenaHash)
         res.status(200).json({

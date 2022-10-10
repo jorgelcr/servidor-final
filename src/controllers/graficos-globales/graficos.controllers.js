@@ -188,7 +188,7 @@ const get_TotalEvidenciasAprobadasRechazadasdAC = async(req, res) => {
     console.log(id, 'id',inicio,'-',fin);
     try { 
          
-        const get_AprobadaRechazada= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where estado_evidencia_responsable = 2 and fk_id_usuario_responsable = $1 or estado_evidencia_dac = 2 and fk_id_usuario_dac = $1 and estado_evidencia_dac = 2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3  ) as PENDIENTES  FROM evidencias where  estado_evidencia_dac = 1 and fk_id_usuario_dac = $1 and fecha_evidencia between $2 and $3', [id, inicio, fin, idunidad]);
+        const get_AprobadaRechazada= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where estado_evidencia_responsable = 2 and fk_id_usuario_responsable = $1 or estado_evidencia_dac = 2 and fk_id_usuario_dac = $1 and estado_evidencia_dac = 2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and estado_evidencia_dac = 1 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3  ) as PENDIENTES  FROM evidencias where  estado_evidencia_dac = 1 and fk_id_usuario_dac = $1 and fecha_evidencia between $2 and $3', [id, inicio, fin, idunidad]);
 /* or estado_evidencia_dac = 0 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3 */
 
         res.status(200).json({
