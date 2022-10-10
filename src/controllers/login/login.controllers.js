@@ -51,7 +51,7 @@ const login = async (req, res = response) => {
                 correo_usuario: responses.rows[0].correo_usuario,
                 fk_id_rol: responses.rows[0].fk_id_rol,
                 fk_id_unidad: responses.rows[0].fk_id_unidad,
-               // fk_id_unidad: responses.rows[0].fk_id_unidad,
+                estado: responses.rows[0].estado,
                 token
             })
        
@@ -66,14 +66,16 @@ const login = async (req, res = response) => {
 
 const revalidarToken = async (req, res = response) => {
 
-
+ try {
+    
+ 
    const { id_usuarios, nombres_usuario } = req;
 
    const token = await generarJWTK(id_usuarios, nombres_usuario)
    var aux = id_usuarios ;
    
    const responses = await pool.query('select id_usuarios,rut, nombres_usuario, correo_usuario, fk_id_rol, fk_id_unidad, nombre_unidad, apellidos_usuario from usuarios INNER JOIN unidad ON usuarios.fk_id_unidad = unidad.id_unidad WHERE id_usuarios = $1', [aux])
-   //console.log(responses.rows, ": AAAAAAA")
+   console.log(responses.rows, ": AAAAAAA")
     return res.json({
         ok         :true,
         msg: "Renovar",
@@ -87,7 +89,14 @@ const revalidarToken = async (req, res = response) => {
         nombre_unidad: responses.rows[0].nombre_unidad,
         token,
         
-    })
+    })} catch (error) {
+        console.log("ERROR DEL RENOVAR TOKEN",error)
+          res.status(401).json( {
+        ok: true,
+        msg: 'Error RENOVAR TOKEN'
+    }) 
+    } 
+    
 }
 
     

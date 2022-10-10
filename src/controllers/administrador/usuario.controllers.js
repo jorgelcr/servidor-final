@@ -38,16 +38,16 @@ const post_Usuario= async(req, res = response) => {
         const { rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad} = req.body;
 
   
-        const insertUsuario = await pool.query('INSERT INTO usuarios (rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',[ rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad]);
+        let contrasenaHash = await bcryptjs.hashSync(contrasena, 10);
+        const insertUsuario = await pool.query('INSERT INTO usuarios (rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',[ rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasenaHash, estado, fk_id_rol, fk_id_unidad]);
         console.log(insertUsuario);
 
-        let contrasenaHash = await bcryptjs.hashSync(contrasena, 10);
-
+        console.log("LA CONTRASEÑA ES: ",contrasenaHash)
         res.status(200).json({
             ok: true,
             message: ' Usuario agregado exitosamente xd',
             body: {
-                producto: {rut, nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad}
+                producto: {rut, nombres_usuario, apellidos_usuario, correo_usuario, contrasenaHash, estado, fk_id_rol, fk_id_unidad}
             }
         })   
     } catch (error) {
@@ -81,25 +81,25 @@ const delete_Usuario = async (req, res) => {
 const update_Usuario= async (req, res) => {
    try {
        
-       const {rut , nombres_usuario, apellidos_usuario, correo_usuario, contrasena, estado, fk_id_rol, fk_id_unidad} = req.body;
+       const {rut , nombres_usuario, apellidos_usuario, correo_usuario/* , contrasena */, estado, fk_id_rol, fk_id_unidad} = req.body;
        let id = await req.params.id;
 
-       req.body.contrasena = await bcryptjs.hashSync(contrasena, 10);
+       /* req.body.contrasena = await bcryptjs.hashSync(contrasena, 10); */
        // console.log("3: ", await bcryptjs.hash( req.body.contrasena = await bcryptjs.hash(contrasena, 10)))
-       const updateusuario = await pool.query('update usuarios set rut=$1, nombres_usuario=$2, apellidos_usuario=$3, correo_usuario=$4, contrasena=$5, estado=$6 , fk_id_rol=$7, fk_id_unidad=$8 where id_usuarios=$9',
+       const updateusuario = await pool.query('update usuarios set rut=$1, nombres_usuario=$2, apellidos_usuario=$3, correo_usuario=$4, estado=$5 , fk_id_rol=$6, fk_id_unidad=$7 where id_usuarios=$8',
        [rut,
         nombres_usuario,
         apellidos_usuario,       
         correo_usuario,
-        req.body.contrasena,
+        /* req.body.contrasena, */
         estado, 
         fk_id_rol, 
         fk_id_unidad,    
         id ]);
 
        
-        console.log("1: ", req.body.contrasena)
-        console.log("2: ", contrasena)
+   /*      console.log("1: ", req.body.contrasena)
+        console.log("2: ", contrasena) */
       
        res.json({
                 msg: 'Usuario actualizado exitosamente ',

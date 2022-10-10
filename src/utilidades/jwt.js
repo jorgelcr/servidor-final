@@ -7,6 +7,7 @@ const generarJWTK = (id_usuarios, nombres_usuario) =>{
         const payload = { id_usuarios, nombres_usuario};
         jwt.sign(payload, process.env.secret_jwt_seed, {
             expiresIn:'1h'
+            
         }, (err, token) =>{
             if (err){
                 console.log("El error del jwt es: ", err)

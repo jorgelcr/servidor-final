@@ -54,6 +54,9 @@ app.use('/api/login', require('./routes/routes-login/login'));
 app.use('/api/misEvidencias-usuarionormal', require('./routes/routes-usuarioNormal/misEvidenciasUsuarioNormal.js'));
 app.use('/api/usuarionormal', require('./routes/routes-usuarioNormal/guardarEvidenciaUsuarioNormal.js'));
 app.use('/api/mi-perfil', require('./routes/routes-usuarioNormal/mi-perfil.js'));
+
+//########################## GRAFICOS #######################################
+
 app.use('/api/graficos', require('./routes/routes-graficosGlobales/graficos.js'));
 
 //################################ PUBLIC ######################################

@@ -35,7 +35,6 @@ const get_TotalEvidencias = async(req, res) => {
     } 
 
 }
-
 const get_TotalEvidenciasUnidades = async(req, res) => {
 
     const {id, inicio, fin}=  req.params /* req.params.id */;
@@ -157,16 +156,15 @@ const get_TotalEvidenciasAmbitoAcademico = async(req, res) => {
     } 
 
 }
-
-
+//############################################# RESPONSABLE ##########################################
 const get_TotalEvidenciasAprobadasRechazadas = async(req, res) => {
 
     const {id, inicio, fin, idunidad}=  req.params /* req.params.id */;
     console.log(id, 'id',inicio,'-',fin);
     try { 
          
-        const get_AprobadaRechazada= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where estado_evidencia_responsable = 2 and fk_id_usuario_responsable = $1 or estado_evidencia_dac = 2 and fk_id_usuario_dac = $1 and estado_evidencia_dac = 2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias INNER JOIN usuarios ON evidencias.fk_id_usuario_responsable = usuarios.rut where estado_evidencia_responsable = 0  and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3 or estado_evidencia_dac = 0  and evidencias.fk_id_unidad = $4 and fk_id_rol = 4 and fecha_evidencia between $2 and $3) as PENDIENTES  FROM evidencias where  estado_evidencia_responsable = 1 and fk_id_usuario_responsable = $1 and fecha_evidencia between $2 and $3', [id, inicio, fin, idunidad]);
-/* , (select count(*) from evidencias where estado_evidencia_dac = 2 or estado_evidencia_responsable = 2 and fk_id_usuario = $1) as rechazadas, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and estado_evidencia_responsable = 1  and fk_id_usuario_responsable = $1 and fecha_evidencia between $2 and $3) as enespera */
+        const get_AprobadaRechazada= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where estado_evidencia_responsable = 2 and fk_id_usuario_responsable = $1 or estado_evidencia_dac = 2 and fk_id_usuario_dac = $1 and estado_evidencia_dac = 2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_responsable = 0  and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3 ) as PENDIENTES  FROM evidencias where  estado_evidencia_responsable = 1 and fk_id_usuario_responsable = $1 and fecha_evidencia between $2 and $3', [id, inicio, fin, idunidad]);
+/* or estado_evidencia_dac = 0 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3 */
 
         res.status(200).json({
             ok: true,
@@ -183,7 +181,31 @@ const get_TotalEvidenciasAprobadasRechazadas = async(req, res) => {
     } 
 
 }
+//############################################# dac ##########################################
+const get_TotalEvidenciasAprobadasRechazadasdAC = async(req, res) => {
 
+    const {id, inicio, fin, idunidad}=  req.params /* req.params.id */;
+    console.log(id, 'id',inicio,'-',fin);
+    try { 
+         
+        const get_AprobadaRechazada= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where estado_evidencia_responsable = 2 and fk_id_usuario_responsable = $1 or estado_evidencia_dac = 2 and fk_id_usuario_dac = $1 and estado_evidencia_dac = 2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3  ) as PENDIENTES  FROM evidencias where  estado_evidencia_dac = 1 and fk_id_usuario_dac = $1 and fecha_evidencia between $2 and $3', [id, inicio, fin, idunidad]);
+/* or estado_evidencia_dac = 0 and evidencias.fk_id_unidad = $4 and fecha_evidencia between $2 and $3 */
+
+        res.status(200).json({
+            ok: true,
+            resultado: get_AprobadaRechazada.rows, 
+        
+        });
+    
+    } catch (error) {
+        console.log("ERROR get_AprobadaRechazada",error)
+          res.status(400).json( {
+        ok: false,
+        msg: 'Error Get Unidad get_AprobadaRechazada'
+    }) 
+    } 
+
+}
 const get_TotalUsuarios = async(req, res) => {
 
     const {inicio, fin}=  req.params /* req.params.id */;
@@ -205,6 +227,58 @@ const get_TotalUsuarios = async(req, res) => {
     } 
 
 }
+/* ######################## ADMINISTRADOR ############################################## */
+
+const get_TotalEvidenciasCreadasSistema = async(req, res) => {
+
+    const {inicio, fin}=  req.params /* req.params.id */;
+    console.log(inicio,'-',fin);
+    try { 
+         
+        const get_TotalEvidencias= await pool.query('SELECT count(id_evidencias) as cantevidenciassistema FROM evidencias where fecha_evidencia between $1 and $2', [inicio,fin]);
+
+
+        res.status(200).json({
+            ok: true,
+            resultado: get_TotalEvidencias.rows, 
+        
+        });
+    
+    } catch (error) {
+        console.log("ERROR get_TotalEvidencias",error)
+          res.status(400).json( {
+        ok: false,
+        msg: 'Error Get Unidad get_TotalEvidencias'
+    }) 
+    } 
+
+}
+
+const get_TotalEvidenciasAPR = async(req, res) => {
+
+    const {inicio, fin}=  req.params /* req.params.id */;
+    console.log(inicio,'-',fin);
+    try { 
+         
+        const get_adminAPR= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where (estado_evidencia_responsable = 2  or estado_evidencia_dac = 2)  and fecha_evidencia between $1 and $2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias  where estado_evidencia_responsable = 0 or estado_evidencia_dac = 0  and fecha_evidencia between $1 and $2) as PENDIENTES  FROM evidencias where  estado_evidencia_responsable = 1 and estado_evidencia_dac= 1 and fecha_evidencia between $1 and $2', [inicio, fin]);
+/* , (select count(*) from evidencias where estado_evidencia_dac = 2 or estado_evidencia_responsable = 2 and fk_id_usuario = $1) as rechazadas, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and estado_evidencia_responsable = 1  and fk_id_usuario_responsable = $1 and fecha_evidencia between $2 and $3) as enespera */
+
+        res.status(200).json({
+            ok: true,
+            resultado: get_adminAPR.rows, 
+        
+        });
+    
+    } catch (error) {
+        console.log("ERROR get_adminAPR",error)
+          res.status(400).json( {
+        ok: false,
+        msg: 'Error Get get_adminAPR'
+    }) 
+    } 
+
+}
+
 module.exports = {
    
     get_TotalEvidencias,
@@ -214,6 +288,9 @@ module.exports = {
     get_TotalEvidenciasCriterios,
     get_TotalEvidenciasAmbitoAcademico,
     get_TotalEvidenciasAprobadasRechazadas,
-    get_TotalUsuarios
+    get_TotalUsuarios,
+    get_TotalEvidenciasCreadasSistema,
+    get_TotalEvidenciasAPR,
+    get_TotalEvidenciasAprobadasRechazadasdAC
 
 }
