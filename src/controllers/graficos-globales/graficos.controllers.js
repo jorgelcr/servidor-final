@@ -260,7 +260,7 @@ const get_TotalEvidenciasAPR = async(req, res) => {
     console.log(inicio,'-',fin);
     try { 
          
-        const get_adminAPR= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where (estado_evidencia_responsable = 2  or estado_evidencia_dac = 2)  and fecha_evidencia between $1 and $2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias  where estado_evidencia_responsable = 0 or estado_evidencia_dac = 0  and fecha_evidencia between $1 and $2) as PENDIENTES  FROM evidencias where  estado_evidencia_responsable = 1 and estado_evidencia_dac= 1 and fecha_evidencia between $1 and $2', [inicio, fin]);
+        const get_adminAPR= await pool.query('SELECT count(estado_evidencia_dac) as APROBADAS, (select count(*) from evidencias where (estado_evidencia_responsable = 2  or estado_evidencia_dac = 2)  and fecha_evidencia between $1 and $2) as RECHAZADAS, (select count(estado_evidencia_dac) from evidencias  where (estado_evidencia_responsable = 0 or estado_evidencia_dac = 0) and estado_evidencia_responsable != 2  and fecha_evidencia between $1 and $2) as PENDIENTES  FROM evidencias where  estado_evidencia_responsable = 1 and estado_evidencia_dac= 1 and fecha_evidencia between $1 and $2', [inicio, fin]);
 /* , (select count(*) from evidencias where estado_evidencia_dac = 2 or estado_evidencia_responsable = 2 and fk_id_usuario = $1) as rechazadas, (select count(estado_evidencia_dac) from evidencias where estado_evidencia_dac = 0 and estado_evidencia_responsable = 1  and fk_id_usuario_responsable = $1 and fecha_evidencia between $2 and $3) as enespera */
 
         res.status(200).json({
